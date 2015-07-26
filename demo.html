@@ -12,6 +12,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="format-detection" content="telephone=no"/>
     <meta name="format-detection" content="address=no"/>
+    <link rel="stylesheet" href="zepto.popup.css">
 </head>
 <body>
     <h3>弹窗插件, 或者组件, 支持良好的自定义，亦可简单上手</h3>
@@ -32,8 +33,20 @@
         <option value="4">自定义动画函数</option>
     </select>
     <button>点击PopUp</button>
+
+    <div class="pop-wrapper">
+        <div class="pop-content">
+        test content!<span class="pop-close">x</span>
+        <a href="#" class="close">click to close panel 1</a>
+        </div>
+    </div>
+    <div class="m-popup-wrapper">
+        <div class="m-popup-content">test content!<span class="btnClose">close</span>
+        <a href="#" class="close">click to close panel 1</a></div>
+    </div>
 <script src="zepto.js"></script>
 <script src="zepto.popup.js"></script>
+<script src="demo.js"></script>
 <script id="pop4" type="text/x-style">
 /** 自定义动画的样式 **/
     .pop-wrapper {
@@ -46,114 +59,6 @@
         -webkit-transition: all 300ms ease-in;
         -webkit-transform: translateY(110%);
     }
-</script>
-<script>
-var $pop;
-
-var demos = {
-    /*------------
-      简单使用
-     ------------*/
-    pop0: function() {
-        $pop = $.popUp();
-    },
-
-    /*------------
-      自定义动画属性
-     ------------*/
-    pop1: function() {
-        $pop = $.popUp({
-
-            // 自定义弹窗的背景色
-            aniProperties: {
-                popUp: {
-                    background: 'red'
-                }
-            }
-        });
-    },
-
-    /*------------
-      自定义弹窗内容0
-     ------------*/
-    pop2: function() {
-        $pop = $.popUp({
-           tmpl: {
-               close: false,
-               title: 'oh~ nobody nobody but title'
-           }
-        });
-    },
-
-    /*------------
-      自定义弹窗内容1
-     ------------*/
-    pop3: function() {
-        $pop = $.popUp({
-            shade: false,   // 不显示遮罩层
-            position: 'left-center',    // 位置为“左中”
-            tmpl: 'hahahaha <h1>shit</h1> ugly'
-        });
-    },
-
-    /*------------
-      自定义动画函数
-     ------------*/
-    pop4: function() {
-        $pop = $.popUp({
-            autoPop: true,  // 自动打开
-            position: 'bottom-center',  // 位置为“下中”
-            // 自定义动画函数
-            animation: {
-                popUp: function($popUp) {
-                    var $popContent = $popUp.find('.pop-content');
-                    $popUp.css({'z-index': 2});
-
-                    setTimeout(function() {
-                        // $popContent.css('bottom', 0)
-                        $popContent.css('-webkit-transform', 'translateY(0)')
-                    }, 0);
-
-                },
-                shade: function($shade) {
-                    $shade.css({display: 'block', 'opacity': .8});
-                }
-            },
-            // 自定义弹窗消失方法
-            destory: function($popUp) {
-                $popUp.find('.pop-content').attr('style', '');
-            }
-        });
-    }
-}
-
-$(function() {
-    var $style4;
-
-    $('#pops').on('change', function(e) {
-        $pop && $pop.remove();
-
-        var val = $(this).val() || 0;
-
-        if (val == 4) {
-           $style4 = $('<style >' + $('#pop4').html() + '<\/style>').appendTo($('body'));
-        } else {
-            $style4 && $style4.remove();
-        }
-
-        demos['pop' + val]();
-    }).trigger('change');
-
-    $('button').on('click', function(e) {
-
-        if ($pop && $pop.length) {
-            $pop.pop();
-        } else {
-            alert('shit, tell the poor man~')
-        }
-    })
-});
-
 </script>
 </body>
 </html>
