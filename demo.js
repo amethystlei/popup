@@ -29,10 +29,10 @@ var demos = {
      ------------*/
     pop2: function() {
         $pop[2] = $.popUp({
-           tmpl: {
-               closeClass: 'btnClose',
-               targetClass: 'm-popup'
-           }
+            closeClass: 'btnClose',
+            targetClass: '2',
+            position: 'top-left'
+
         });
     },
 
@@ -42,8 +42,9 @@ var demos = {
     pop3: function() {
         $pop[3] = $.popUp({
             shade: false,   // 不显示遮罩层
-            position: 'left-center',    // 位置为“左中”
-            tmpl: 'hahahaha <h1>shit</h1> ugly'
+            position: 'center-left',    // 位置为“左中”
+            closeClass: 'btnClose',
+            targetClass: '3'
         });
     },
 
@@ -54,32 +55,17 @@ var demos = {
         $pop[4] = $.popUp({
             autoPop: true,  // 自动打开
             position: 'bottom-center',  // 位置为“下中”
-            // 自定义动画函数
-            animation: {
-                popUp: function($popUp) {
-                    var $popContent = $popUp.find('.pop-content');
-                    $popUp.css({'z-index': 2});
-
-                    setTimeout(function() {
-                        // $popContent.css('bottom', 0)
-                        $popContent.css('-webkit-transform', 'translateY(0)');
-                    }, 0);
-
-                },
-                shade: function($shade) {
-                    $shade.css({display: 'block', 'opacity': 0.8});
-                }
-            },
-            // 自定义弹窗消失方法
-            destory: function($popUp) {
-                $popUp.find('.pop-wrapper').attr('style', '');
-            }
+            closeClass: 'btnClose',
+            targetClass: '4'
         });
     }
 };
 
-demos.pop0();
-demos.pop1();
+// demos.pop0();
+// demos.pop1();
+for (var item in demos) {
+    demos[item]();
+}
 console.log($pop[0]);
 console.log($pop.length);
 
@@ -97,5 +83,5 @@ console.log($pop.length);
     });
 
     $('.close').on('click', function() {
-        $('.pop-close').trigger('click');
+        $('.pop-wrapper')[0].style = '';
     });

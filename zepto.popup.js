@@ -13,7 +13,7 @@
  *      isScrollMove: {Boolean} 默认false 是否禁用掉scroll，在弹出的时候
  *     : {String} 默认{closeClass: 'pop-close',targetClass: 'popup-wrapper',targetPrefix: ''} 如果是字符串，则直接作为弹窗内容，如果是对象
  *          closeClass: 'pop-close', 默认弹窗按钮的class
-            targetClass: 'popup-wrapper', 默认弹窗的class
+            targetClass: 'pop-wrapper', 默认弹窗的class
             targetPrefix: '' 默认弹窗class的前缀
  *      zIndex: {Number} 默认为999 设置弹窗z-index 最小为999
  *      autoPop: {Boolean} 默认为false 是否自动打开
@@ -56,19 +56,23 @@
                 closeClass: closeClass,
                 targetClass: targetClass,
                 targetPrefix: targetPrefix,
-                zIndex: 2,
+                zIndex: 999,
                 autoPop: false,
                 shade: true,
                 destory: false
             }, opts),
             defaultCSS = '',
             $shade = $('#shade'),
-            $body = $(doc.body).prepend('<style>' + generateStyle(defaultCSS, settings) + '</style>'),
+            $body = $(doc.body),
             $popUp, 
             $targetClass, 
             $closeClass, 
             $prefix = '',
             $content;
+
+        if (settings.position) {
+            $body.prepend('<style>' + generateStyle(defaultCSS, settings) + '</style>');
+        }
 
         if (settings.shade && !$shade.length) {
             $shade = $('<div id="shade" class="shade" style=""></div>').appendTo($body);
@@ -97,7 +101,7 @@
                     if ($.isFunction(settings.animation.popUp)) {
                         settings.animation.popUp($popUp);
                     } else {
-                        $popUp.css({display: '-webkit-box', 'z-index': settings.zIndex || 2})
+                        $popUp.css({display: '-webkit-flex', 'z-index': settings.zIndex || 2})
                             .animate( $.extend(aniProperties.popUp, settings.aniProperties.popUp), $.extend(animation.popUp, settings.animation.popUp) );
                     }
 
@@ -115,15 +119,14 @@
                     if (settings.shade) {
                         $shade.show();
                     }
-                    $popUp.css({display: '-webkit-box', 'z-index': settings.zIndex || 999, opacity: 1});
+                    $popUp.css({display: '-webkit-flex', 'z-index': settings.zIndex || 999, opacity: 1});
                 }
 
 
             },
             destroy: function() {
                 $shade.attr('style', '');
-                $popUp.css('display', 'none');
-                $('.pop-wrapper').css('display', 'none');
+                $popUp.attr('style', '');
                 if (!settings.isScrollMove) {
                     $(win).off('scroll,touchmove', eventHandler);
                 }
@@ -154,39 +157,44 @@
 
     function generateStyle(src, opts) {
         src += '.';
-        var prefix = '';
+        var prefix = '', targetClass = '';
 
         if (opts.targetPrefix) {
             prefix = opts.targetPrefix;
+            targetClass = prefix + opts.targetClass; 
         }
-        src += prefix + opts.targetClass + '{';
+        src += targetClass;
+        if (targetClass !== 'pop-wrapper') {
+            src += '.pop-wrapper';
+        }
+        src +='{';
         switch(opts.position) {
-            case 'left-top':
-                src += prefixStyle('box-align: start;') + '} .'+prefix+'content{ margin-right: auto; }';
+            case 'top-left':
+                src += prefixStyle('align-items: flex-start;') + prefixStyle('justify-content: flex-start;');
                 break;
             case 'top-center':
-                src += prefixStyle('box-align: start;') + '} .'+prefix+'content{ margin-right: auto; margin-left: auto; }';
+                src += prefixStyle('align-items: flex-start;') + prefixStyle('justify-content: center;');
                 break;
-            case 'right-top':
-                src += prefixStyle('box-align: start;') + '} .'+prefix+'content{ margin-left: auto; }';
+            case 'top-right':
+                src += prefixStyle('align-items: flex-start;') + prefixStyle('justify-content: flex-end;');
                 break;
-            case 'right-center':
-                src += prefixStyle('box-align: center;') + '} .'+prefix+'content{ margin-left: auto; }';
+            case 'center-left':
+                src += prefixStyle('align-items: center;') + prefixStyle('justify-content: flex-start;');
                 break;
-            case 'right-bottom':
-                src += prefixStyle('box-align: end;') + '} .'+prefix+'content{ margin-left: auto; }';
+            case 'center-right':
+                src += prefixStyle('align-items: center;') + prefixStyle('justify-content: flex-end;');
+                break;
+            case 'bottom-left':
+                src += prefixStyle('align-items: flex-end;') + prefixStyle('justify-content: flex-start;');
                 break;
             case 'bottom-center':
-                src += prefixStyle('box-align: end;') + '} .'+prefix+'content{ margin-right: auto; margin-left: auto; }';
+                src += prefixStyle('align-items: flex-end;') + prefixStyle('justify-content: center;');
                 break;
-            case 'left-bottom':
-                src += prefixStyle('box-align: end;') + '} .'+prefix+'content{ margin-right: auto; }';
-                break;
-            case 'left-center':
-                src += prefixStyle('box-align: center;') + '} .'+prefix+'content{ margin-right: auto; }';
+            case 'bottom-right':
+                src += prefixStyle('align-items: flex-end;') + prefixStyle('justify-content: flex-end;');
                 break;
             default:
-                src += prefixStyle('box-align: center;') + '} .'+prefix+'content{ margin-left: auto; margin-right: auto;}';
+                src += prefixStyle('align-items: center;') + prefixStyle('justify-content: center;');
                 break;
         }
 
@@ -194,7 +202,7 @@
     }
 
     function prefixStyle(ori) {
-        return '-webkit-' + ori + '-ms-' + ori + '-moz-' + ori + '-o-' + ori;
+        return '-webkit-' + ori + ori;
     }
 
     $.extend($, {
